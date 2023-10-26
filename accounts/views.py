@@ -9,7 +9,11 @@ from django.contrib import messages, auth
 # Create your views here.
 def registerUser(request):
     """Handle sign up process for customers"""
-    if request.method == 'POST':
+        # Handle users who are already authenticated
+    if request.user.is_authenticated:
+        messages.warning(request, "You're already logged in!")
+        return redirect('dashboard')
+    elif request.method == 'POST':
         form = UserForm(request.POST)
         if form.is_valid():
             password = form.cleaned_data['password']
@@ -32,7 +36,11 @@ def registerUser(request):
 
 def registerVendor(request):
     """Handle sign up process for vendors"""
-    if request.method == 'POST':
+     # Handle users who are already authenticated
+    if request.user.is_authenticated:
+        messages.warning(request, "You're already logged in!")
+        return redirect('dashboard')
+    elif request.method == 'POST':
         form = UserForm(request.POST)
         vendor_form = VendorForm(request.POST, request.FILES)
         if form.is_valid() and vendor_form.is_valid():
@@ -51,10 +59,6 @@ def registerVendor(request):
             vendor.save()
             messages.success(request, 'Your account has been registered successfully and is pending approval')
             return redirect('registerVendor')            
-            
-            
-        else:
-            pass
     else: 
         form = UserForm()
         vendor_form = VendorForm()
@@ -66,7 +70,12 @@ def registerVendor(request):
 
 
 def login(request):
-    if request.method == 'POST':
+    """ Handles the view for the log in screen """
+    # Handle users who are already authenticated
+    if request.user.is_authenticated:
+        messages.warning(request, "You're already logged in!")
+        return redirect('dashboard')
+    elif request.method == 'POST':
         email = request.POST['email']
         password = request.POST['password']
         user = auth.authenticate(email=email, password=password)
