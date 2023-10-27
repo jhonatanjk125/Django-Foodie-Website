@@ -5,10 +5,25 @@ from .forms import UserForm
 from .models import User, UserProfile
 from django.contrib import messages, auth
 from .utils import detectUser
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
+from django.core.exceptions import PermissionDenied
 
+#Restrict customers from accessing vendor dashboard
+def check_customer_role(user):
+    if user.role == 2:
+        return True
+    else:
+        redirect('vendorDashboard')
+    
 
-# Create your views here.
+# Restrict vendors from accessing customer dashboard
+def check_vendor_role(user):
+    if user.role == 1:
+        return True
+    else:
+        redirect('customerDashboard')
+    
+    
 def registerUser(request):
     """Handle sign up process for customers"""
         # Handle users who are already authenticated
@@ -40,7 +55,7 @@ def registerVendor(request):
     """Handle sign up process for vendors"""
      # Handle users who are already authenticated
     if request.user.is_authenticated:
-        messages.warning(request, "You're already logged in!")
+        messages.warning(request, "You're already logged in")
         return redirect('myAccount')
     elif request.method == 'POST':
         form = UserForm(request.POST)
@@ -75,7 +90,7 @@ def login(request):
     """ Handles the view for the log in screen """
     # Handle users who are already authenticated
     if request.user.is_authenticated:
-        messages.warning(request, "You're already logged in!")
+        messages.warning(request, "You're already logged in")
         return redirect('myAccount')
     elif request.method == 'POST':
         email = request.POST['email']
@@ -83,10 +98,10 @@ def login(request):
         user = auth.authenticate(email=email, password=password)
         if user is not None:
             auth.login(request, user)
-            messages.success(request, "You've succesfully logged in.")
+            messages.success(request, "You've succesfully logged in")
             return redirect('myAccount')
         else:
-            messages.error(request, 'Incorrect login details, please check the email or pasword.')
+            messages.error(request, 'Incorrect login details, please check the email or pasword')
             return redirect('login')
     context = {}
     return render(request, 'accounts/login.html', context)
@@ -94,7 +109,7 @@ def login(request):
 
 def logout(request):
     auth.logout(request)
-    messages.info(request, 'You are logged out.')
+    messages.info(request, "You've sucessfully logged out")
     context = {}
     return redirect('login')
 
@@ -107,12 +122,14 @@ def myAccount(request):
 
 
 @login_required(login_url='login')
+@user_passes_test(check_customer_role)
 def customerDashboard(request):
     context = {}
     return render(request, 'accounts/customerDashboard.html', context)
 
 
 @login_required(login_url='login')
+@user_passes_test(check_vendor_role)
 def vendorDashboard(request):
     context = {}
     return render(request, 'accounts/vendorDashboard.html', context)
