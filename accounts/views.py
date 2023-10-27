@@ -4,6 +4,8 @@ from vendor.forms import VendorForm
 from .forms import UserForm
 from .models import User, UserProfile
 from django.contrib import messages, auth
+from .utils import detectUser
+from django.contrib.auth.decorators import login_required
 
 
 # Create your views here.
@@ -39,7 +41,7 @@ def registerVendor(request):
      # Handle users who are already authenticated
     if request.user.is_authenticated:
         messages.warning(request, "You're already logged in!")
-        return redirect('dashboard')
+        return redirect('myAccount')
     elif request.method == 'POST':
         form = UserForm(request.POST)
         vendor_form = VendorForm(request.POST, request.FILES)
@@ -74,7 +76,7 @@ def login(request):
     # Handle users who are already authenticated
     if request.user.is_authenticated:
         messages.warning(request, "You're already logged in!")
-        return redirect('dashboard')
+        return redirect('myAccount')
     elif request.method == 'POST':
         email = request.POST['email']
         password = request.POST['password']
@@ -82,7 +84,7 @@ def login(request):
         if user is not None:
             auth.login(request, user)
             messages.success(request, "You've succesfully logged in.")
-            return redirect('dashboard')
+            return redirect('myAccount')
         else:
             messages.error(request, 'Incorrect login details, please check the email or pasword.')
             return redirect('login')
@@ -96,8 +98,22 @@ def logout(request):
     context = {}
     return redirect('login')
 
-def dashboard(request):
-    context = {}
-    return render(request, 'accounts/dashboard.html', context)
 
+@login_required(login_url='login')
+def myAccount(request):
+    user = request.user
+    redirectUrl = detectUser(user)
+    return redirect(redirectUrl)
+
+
+@login_required(login_url='login')
+def customerDashboard(request):
+    context = {}
+    return render(request, 'accounts/customerDashboard.html', context)
+
+
+@login_required(login_url='login')
+def vendorDashboard(request):
+    context = {}
+    return render(request, 'accounts/vendorDashboard.html', context)
 
