@@ -4,7 +4,7 @@ from vendor.forms import VendorForm
 from .forms import UserForm
 from .models import User, UserProfile
 from django.contrib import messages, auth
-from .utils import detectUser
+from .utils import detectUser, sendVerificationEmail
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.core.exceptions import PermissionDenied
 
@@ -29,7 +29,7 @@ def registerUser(request):
         # Handle users who are already authenticated
     if request.user.is_authenticated:
         messages.warning(request, "You're already logged in!")
-        return redirect('dashboard')
+        return redirect('myAccount')
     elif request.method == 'POST':
         form = UserForm(request.POST)
         if form.is_valid():
@@ -41,6 +41,7 @@ def registerUser(request):
             user.email = email
             user.role = User.CUSTOMER
             form.save()
+            sendVerificationEmail(request,user)
             messages.success(request, 'Your account has been registered successfully')
             return redirect('registerUser')
         else: 
@@ -74,6 +75,7 @@ def registerVendor(request):
             user_profile = UserProfile.objects.get(user=user)
             vendor.user_profile = user_profile
             vendor.save()
+            sendVerificationEmail(request,user)
             messages.success(request, 'Your account has been registered successfully and is pending approval')
             return redirect('registerVendor')            
     else: 
@@ -134,3 +136,6 @@ def vendorDashboard(request):
     context = {}
     return render(request, 'accounts/vendorDashboard.html', context)
 
+def activate(request, uidb64, token):
+    """ Activate user via confirmation link by setting is_active status to true"""
+    return
