@@ -43,7 +43,9 @@ def registerUser(request):
             user.email = email
             user.role = User.CUSTOMER
             form.save()
-            sendVerificationEmail(request,user)
+            email_subject='Please confirm your email address'
+            email_template='accounts/emails/verification_email.html'
+            sendVerificationEmail(request,user, email_subject, email_template)
             messages.success(request, 'Your account has been registered successfully')
             return redirect('registerUser')
         else: 
@@ -77,7 +79,9 @@ def registerVendor(request):
             user_profile = UserProfile.objects.get(user=user)
             vendor.user_profile = user_profile
             vendor.save()
-            sendVerificationEmail(request,user)
+            email_subject='Please confirm your email address'
+            email_template='accounts/emails/verification_email.html'
+            sendVerificationEmail(request,user, email_subject, email_template)
             messages.success(request, 'Your account has been registered successfully and is pending approval')
             return redirect('registerVendor')            
     else: 
@@ -154,3 +158,28 @@ def activate(request, uidb64, token):
     else:
         messages.error(request, 'Invalid activation link')
         return redirect('myAccount')
+    
+
+def forgotPassword(request):
+    if request.method == 'POST':
+        email = request.POST['email']
+        if User.objects.filter(email=email).exists:
+            user = User.objects.get(email__exact=email)
+            email_subject = 'Reset password'
+            email_template = 'accounts/emails/reset_password_email.html'
+            sendVerificationEmail(request, user, email_subject, email_template)
+            messages.success(request, 'A reset link has been sent to your email address')
+            return redirect('login')
+        else:
+            messages.error(request, "An account with the email you entered doesn't exist")
+            return redirect('forgotPassword')
+    return render(request, 'accounts/forgotPassword.html')
+
+
+def resetPasswordValidate(request, uid64, token):
+    """Validate user by decoding user primary key and token"""
+    return 
+
+
+def resetPassword(request):
+    return render(request, 'accounts/resetPassword.html')
