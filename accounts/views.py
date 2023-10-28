@@ -111,14 +111,12 @@ def login(request):
         else:
             messages.error(request, 'Incorrect login details, please check the email or pasword')
             return redirect('login')
-    context = {}
-    return render(request, 'accounts/login.html', context)
+    return render(request, 'accounts/login.html')
 
 
 def logout(request):
     auth.logout(request)
     messages.info(request, "You've sucessfully logged out")
-    context = {}
     return redirect('login')
 
 
@@ -132,15 +130,13 @@ def myAccount(request):
 @login_required(login_url='login')
 @user_passes_test(check_customer_role)
 def customerDashboard(request):
-    context = {}
-    return render(request, 'accounts/customerDashboard.html', context)
+    return render(request, 'accounts/customerDashboard.html')
 
 
 @login_required(login_url='login')
 @user_passes_test(check_vendor_role)
 def vendorDashboard(request):
-    context = {}
-    return render(request, 'accounts/vendorDashboard.html', context)
+    return render(request, 'accounts/vendorDashboard.html')
 
 def activate(request, uidb64, token):
     """ Activate user via confirmation link by setting is_active status to true"""
