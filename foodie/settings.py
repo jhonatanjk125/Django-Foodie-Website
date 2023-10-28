@@ -155,6 +155,7 @@ MESSAGE_TAGS = {
 
 # Email configuration
 EMAIL_HOST = 'smtp.gmail.com'
+DEFAULT_FROM_EMAIL = 'Foodie Marketplace'
 EMAIL_PORT = 587
 EMAIL_HOST_USER = env('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
