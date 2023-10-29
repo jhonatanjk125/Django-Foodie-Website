@@ -1,0 +1,9 @@
+{% autoescape off %}
+Hi {{ user.first_name }},
+
+{% if is_approved %}
+Congratulations! Your business has been approved by our staff team! You can start adding your products to display now.
+{% else %}
+Sorry, you're not eligible for publishing on our marketplace. For more details please contact support@foodie.com
+{% endif %}
+{% endautoescape %}
