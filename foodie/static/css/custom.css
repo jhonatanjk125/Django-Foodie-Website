@@ -13,3 +13,8 @@
     z-index: 30;
 }
 
+.btn.btn-info{
+    padding: 2px 1.75em;
+    font-size: 12px;
+    cursor: pointer;
+}

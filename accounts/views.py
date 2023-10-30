@@ -137,11 +137,7 @@ def customerDashboard(request):
 @login_required(login_url='login')
 @user_passes_test(check_vendor_role)
 def vendorDashboard(request):
-    vendor = Vendor.objects.get(user=request.user)
-    context = {
-        'vendor':vendor,
-    }
-    return render(request, 'accounts/vendorDashboard.html', context)
+    return render(request, 'accounts/vendorDashboard.html')
 
 def activate(request, uidb64, token):
     """ Activate user via confirmation link by setting is_active status to true"""
