@@ -18,10 +18,11 @@ class UserForm(forms.ModelForm):
             raise forms.ValidationError("Passwords don't match")
         
 class UserProfileForm(forms.ModelForm):
+    address = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'Type your address', 'required':'required'}))
     profile_picture = forms.FileField(widget=forms.FileInput(attrs={'class': 'btn btn-info'}), validators=[only_allow_images])
     cover_photo = forms.FileField(widget=forms.FileInput(attrs={'class': 'btn btn-info'}), validators=[only_allow_images])
     latitude = forms.CharField(widget=forms.TextInput(attrs={'readonly':'readonly'}))
     longuitude = forms.CharField(widget=forms.TextInput(attrs={'readonly':'readonly'}))
     class Meta: 
         model = UserProfile
-        fields = ['profile_picture', 'cover_photo', 'address_line_1', 'address_line_2', 'country', 'state', 'city', 'pin_code', 'latitude', 'longuitude']
+        fields = ['profile_picture', 'cover_photo', 'address', 'country', 'state', 'city', 'pin_code', 'latitude', 'longuitude']
