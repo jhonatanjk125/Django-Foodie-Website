@@ -6,7 +6,8 @@ from accounts.models import UserProfile
 from .models import Vendor
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
-from menu.models import Category
+from menu.models import Category, Product
+from .utils import get_vendor
 
 
 # Create your views here.
@@ -37,11 +38,24 @@ def vendorProfile(request):
     }
     return render(request, 'vendor/vendorProfile.html', context)
 
-
+@login_required(login_url='login')
+@user_passes_test(check_vendor_role)
 def menuBuilder(request):
-    vendor = Vendor.objects.get(user=request.user)
+    vendor = get_vendor(request)
     categories = Category.objects.filter(vendor=vendor)
     context = {
         'categories': categories,
     }
     return render(request, 'vendor/menuBuilder.html', context)
+
+@login_required(login_url='login')
+@user_passes_test(check_vendor_role)
+def categories(request, pk=None):
+    vendor = get_vendor(request)
+    category = get_object_or_404(Category, pk=pk)
+    products = Product.objects.filter(vendor=vendor, category=category)
+    context = {
+        'category': category,
+        'products': products,
+    }
+    return render(request, 'vendor/item_by_category.html', context)
