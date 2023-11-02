@@ -6,5 +6,6 @@ from accounts import views as accounts_views
 urlpatterns = [
     path('', accounts_views.myAccount),
     path('profile/', views.vendorProfile, name='vendorProfile'),
+    path('menuBuilder/', views.menuBuilder, name='menuBuilder')
 
 ]
