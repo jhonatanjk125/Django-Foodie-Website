@@ -10,12 +10,18 @@ class Category(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+
     class Meta:
         verbose_name = 'category'
         verbose_name_plural = 'categories'
 
+
     def __str__(self):
         return self.category_name
+    
+
+    def clean(self):
+        self.category_name = self.category_name.capitalize()
     
 
 class Product(models.Model):
