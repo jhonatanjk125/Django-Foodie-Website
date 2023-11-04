@@ -62,6 +62,9 @@ def categories(request, pk=None):
     }
     return render(request, 'vendor/item_by_category.html', context)
 
+
+@login_required(login_url='login')
+@user_passes_test(check_vendor_role)
 def addCategory(request):
     """ Handles the request to add a new category """
     if request.method == 'POST':
@@ -82,6 +85,8 @@ def addCategory(request):
     return render(request, 'vendor/addCategory.html', context)
 
 
+@login_required(login_url='login')
+@user_passes_test(check_vendor_role)
 def editCategory(request, pk=None):
     """ Handles the request to edit a category """
     category = get_object_or_404(Category, pk=pk)
@@ -104,6 +109,8 @@ def editCategory(request, pk=None):
     return render(request, 'vendor/editCategory.html', context)
 
 
+@login_required(login_url='login')
+@user_passes_test(check_vendor_role)
 def deleteCategory(request, pk=None):
     """ Handles the request to delete a category """
     category = get_object_or_404(Category, pk=pk)
@@ -112,6 +119,8 @@ def deleteCategory(request, pk=None):
     return redirect('menuBuilder')
 
 
+@login_required(login_url='login')
+@user_passes_test(check_vendor_role)
 def addProduct(request):
     if request.method == 'POST':
         form = ProductForm(request.POST, request.FILES)
@@ -129,3 +138,27 @@ def addProduct(request):
         'form': form,
     }
     return render(request,'vendor/addProduct.html', context)
+
+
+@login_required(login_url='login')
+@user_passes_test(check_vendor_role)
+def editProduct(request, pk=None):
+    """ Handles the request to edit a product """
+    product = get_object_or_404(Product, pk=pk)
+    if request.method == 'POST':
+        form = ProductForm(request.POST, request.FILES, instance=product)
+        if form.is_valid():
+            product_title = form.cleaned_data['product_title']
+            product  = form.save(commit=False)
+            product.vendor = get_vendor(request)
+            product.slug = slugify(product_title)
+            form.save()
+            messages.success(request, 'Product updated successfully!')
+            return redirect('categories', product.category.id)
+    else:
+        form = ProductForm(instance=product)
+    context = {
+        'form': form,
+        'product': product,
+    }
+    return render(request, 'vendor/editProduct.html', context)
