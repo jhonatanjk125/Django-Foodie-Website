@@ -1,6 +1,6 @@
 from django.shortcuts import get_object_or_404, redirect, render
 from accounts.views import check_vendor_role
-from menu.forms import CategoryForm
+from menu.forms import CategoryForm, ProductForm
 from .forms import VendorForm
 from accounts.forms import UserProfileForm
 from accounts.models import UserProfile
@@ -105,7 +105,27 @@ def editCategory(request, pk=None):
 
 
 def deleteCategory(request, pk=None):
+    """ Handles the request to delete a category """
     category = get_object_or_404(Category, pk=pk)
     category.delete()
     messages.success(request, 'Category has been deleted successfully')
     return redirect('menuBuilder')
+
+
+def addProduct(request):
+    if request.method == 'POST':
+        form = ProductForm(request.POST, request.FILES)
+        if form.is_valid():
+            product_title = form.cleaned_data['product_title']
+            product  = form.save(commit=False)
+            product.vendor = get_vendor(request)
+            product.slug = slugify(product_title)
+            form.save()
+            messages.success(request, 'Category added successfully!')
+            return redirect('categories', product.category.id)
+    else:
+        form = ProductForm()
+    context = {
+        'form': form,
+    }
+    return render(request,'vendor/addProduct.html', context)
