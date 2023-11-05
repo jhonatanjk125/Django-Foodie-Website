@@ -122,6 +122,7 @@ def deleteCategory(request, pk=None):
 @login_required(login_url='login')
 @user_passes_test(check_vendor_role)
 def addProduct(request):
+    """ Handles the request to add a new product to each category """
     if request.method == 'POST':
         form = ProductForm(request.POST, request.FILES)
         if form.is_valid():
@@ -134,6 +135,8 @@ def addProduct(request):
             return redirect('categories', product.category.id)
     else:
         form = ProductForm()
+        # Filter out categories belonging to logged in vendor
+        form.fields['category'].queryset = Category.objects.filter(vendor=get_vendor(request))
     context = {
         'form': form,
     }
@@ -157,6 +160,8 @@ def editProduct(request, pk=None):
             return redirect('categories', product.category.id)
     else:
         form = ProductForm(instance=product)
+        # Filter out categories belonging to logged in vendor
+        form.fields['category'].queryset = Category.objects.filter(vendor=get_vendor(request))
     context = {
         'form': form,
         'product': product,
