@@ -17,5 +17,6 @@ urlpatterns = [
     #CRUD Operations for products
     path('menuBuilder/product/add/', views.addProduct, name='addProduct'),
     path('menuBuilder/product/edit/<int:pk>/', views.editProduct, name='editProduct'),
+    path('menuBuilder/product/delete/<int:pk>/', views.deleteProduct, name='deleteProduct'),
     
 ]

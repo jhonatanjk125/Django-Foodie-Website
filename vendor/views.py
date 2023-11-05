@@ -162,3 +162,13 @@ def editProduct(request, pk=None):
         'product': product,
     }
     return render(request, 'vendor/editProduct.html', context)
+
+
+@login_required(login_url='login')
+@user_passes_test(check_vendor_role)
+def deleteProduct(request, pk=None):
+    """ Handles the request to delete a category """
+    product = get_object_or_404(Product, pk=pk)
+    product.delete()
+    messages.success(request, 'Product has been deleted successfully')
+    return redirect('categories', product.category.id)
