@@ -60,7 +60,7 @@ def categories(request, pk=None):
         'category': category,
         'products': products,
     }
-    return render(request, 'vendor/item_by_category.html', context)
+    return render(request, 'vendor/categoryItems.html', context)
 
 
 @login_required(login_url='login')
