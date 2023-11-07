@@ -10,6 +10,7 @@ from django.core.exceptions import PermissionDenied
 from django.utils.http import urlsafe_base64_decode
 from django.contrib.auth.tokens import default_token_generator
 from vendor.models import Vendor
+from django.template.defaultfilters import slugify
 
 #Restrict customers from accessing vendor dashboard
 def check_customer_role(user):
@@ -77,9 +78,12 @@ def registerVendor(request):
             user.save()
             vendor = vendor_form.save(commit=False)
             vendor.user = user
+            vendor_name = vendor_form.cleaned_data['vendor_name']
+            vendor.vendor_slug = slugify(vendor_name)+'-'+str(user.id)
             user_profile = UserProfile.objects.get(user=user)
             vendor.user_profile = user_profile
             vendor.save()
+            # Send verification email
             email_subject='Please confirm your email address'
             email_template='accounts/emails/verification_email.html'
             sendVerificationEmail(request,user, email_subject, email_template)
