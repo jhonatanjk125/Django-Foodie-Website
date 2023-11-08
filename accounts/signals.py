@@ -5,11 +5,9 @@ from .models import User, UserProfile
 
 @receiver(post_save, sender=User)
 def post_save_profile_receiver(sender, instance, created, **kwargs):
-    print('executed')
     #Create profile when user is created
     if created:
         UserProfile.objects.create(user=instance)
-        print('created') 
     #Update profile when user is updated
     else:
         try:
