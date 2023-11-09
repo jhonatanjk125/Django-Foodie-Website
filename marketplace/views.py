@@ -1,3 +1,4 @@
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, render
 from menu.models import Category, Product
 from vendor.models import Vendor
@@ -27,3 +28,7 @@ def vendorPage(request, vendor_slug):
         'categories':categories,
     }
     return render(request, 'marketplace/vendorPage.html', context)
+
+
+def addToCart(request, product_id):
+    return HttpResponse(product_id)

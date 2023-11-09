@@ -56,3 +56,23 @@ function onPlaceChanged (){
         }
     }
 }
+
+
+$(document).ready(function(){
+    $('.addToCart').on('click', function(e){
+        e.preventDefault();
+        product_id = $(this).attr('data-id');
+        url = $(this).attr('data-url');
+        data = {
+            product_id: product_id,
+        }
+        $.ajax({
+            type: 'GET',
+            url: url,
+            data: data,
+            success: function(response){
+                alert(response)
+            }
+        })
+    })
+})
