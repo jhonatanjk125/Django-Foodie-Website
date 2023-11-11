@@ -1,5 +1,6 @@
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, render
+from marketplace.context_processors import get_cart_count
 from marketplace.models import Cart
 from menu.models import Category, Product
 from vendor.models import Vendor
@@ -48,10 +49,10 @@ def addToCart(request, product_id):
                     # Increase number of products in cart for products already in it
                     checkCart.quantity += 1
                     checkCart.save()
-                    return JsonResponse({'status':'Success', 'message':'Increase cart quantity'})
+                    return JsonResponse({'status':'Success', 'message':'Increased number of items in the cart','cart_counter':get_cart_count(request)['cart_count'], 'qty':checkCart.quantity})
                 except:
                     checkCart = Cart.objects.create(user=request.user, product=product, quantity=1)
-                    return JsonResponse({'status':'Success', 'message':'Added product to cart'})
+                    return JsonResponse({'status':'Success', 'message':'Added product to cart', 'cart_counter':get_cart_count(request)['cart_count'],'qty':checkCart.quantity})
             except:
                 return JsonResponse({'status': 'Failed', 'message':"This product doesn't exist"})
         else:
