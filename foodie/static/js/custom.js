@@ -75,4 +75,11 @@ $(document).ready(function(){
             }
         })
     })
+
+    // Place the cart item quantity
+    $('.item_qty').each(function(){
+        var the_id = $(this).attr('id');
+        var qty = $(this).attr('data-qty');
+        $('#' + the_id).html(qty)
+    })
 })
