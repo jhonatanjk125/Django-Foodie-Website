@@ -52,13 +52,13 @@ def addToCart(request, product_id):
                     return JsonResponse({'status':'Success', 'message':'Increased number of items in the cart','cart_counter':get_cart_count(request)['cart_count'], 'qty':checkCart.quantity})
                 except:
                     checkCart = Cart.objects.create(user=request.user, product=product, quantity=1)
-                    return JsonResponse({'status':'Success', 'message':'Added product to cart', 'cart_counter':get_cart_count(request)['cart_count'],'qty':checkCart.quantity})
+                    return JsonResponse({'status':'Success', 'message':'The product was succesfully added', 'cart_counter':get_cart_count(request)['cart_count'],'qty':checkCart.quantity})
             except:
                 return JsonResponse({'status': 'Failed', 'message':"This product doesn't exist"})
         else:
             return JsonResponse({'status': 'Failed', 'message':'Invalid request'})
     else: 
-       return JsonResponse({'status': 'Failed', 'message':'Please login to add items to your cart'})
+       return JsonResponse({'status': 'notAuthenticated', 'message':'Please login to add items to your cart'})
     
 
 def removeFromCart(request, product_id):
@@ -77,7 +77,7 @@ def removeFromCart(request, product_id):
                     else:
                         checkCart.delete()
                         checkCart.quantity = 0
-                        return JsonResponse({'status':'Success', 'message':'Removed product from cart', 'cart_counter':get_cart_count(request)['cart_count'],'qty':0})
+                        return JsonResponse({'status':'Success', 'message':'The product was succesfully removed', 'cart_counter':get_cart_count(request)['cart_count'],'qty':0})
                 except:
                     return JsonResponse({'status': 'Failed', 'message':"This product isn't in your cart"})
             except:
@@ -85,4 +85,4 @@ def removeFromCart(request, product_id):
         else:
             return JsonResponse({'status': 'Failed', 'message':'Invalid request'})
     else: 
-       return JsonResponse({'status': 'Failed', 'message':'Please login to remove items from your cart'})
+       return JsonResponse({'status': 'notAuthenticated', 'message':'Please login to remove items from your cart'})

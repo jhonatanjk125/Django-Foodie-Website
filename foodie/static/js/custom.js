@@ -68,9 +68,16 @@ $(document).ready(function(){
             type: 'GET',
             url: url,
             success: function(response){
+                if(response.status == 'notAuthenticated'){
+                    Swal.fire(response.message, '', 'info').then(function(){
+                        window.location = '/login/';
+                    })
+                }else if(response.status == 'Failed'){
+                    Swal.fire(response.message, '', 'error')
+                }else{
                 $('#cart_counter').html(response.cart_counter)
                 $('#qty-'+product_id).html(response.qty)
-            }
+            }}
         })
     })
 
@@ -83,9 +90,16 @@ $(document).ready(function(){
             type: 'GET',
             url: url,
             success: function(response){
+                if(response.status == 'notAuthenticated'){
+                    Swal.fire(response.message, '', 'info').then(function(){
+                        window.location = '/login/';
+                    })
+                }else if(response.status == 'Failed'){
+                    Swal.fire(response.message, '', 'error')
+                }else{
                 $('#cart_counter').html(response.cart_counter)
                 $('#qty-'+product_id).html(response.qty)
-            }
+            }}
         })
     })
 
