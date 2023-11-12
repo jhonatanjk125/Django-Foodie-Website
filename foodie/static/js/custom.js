@@ -59,17 +59,29 @@ function onPlaceChanged (){
 
 
 $(document).ready(function(){
+    // Add to cart
     $('.addToCart').on('click', function(e){
         e.preventDefault();
         product_id = $(this).attr('data-id');
         url = $(this).attr('data-url');
-        data = {
-            product_id: product_id,
-        }
         $.ajax({
             type: 'GET',
             url: url,
-            data: data,
+            success: function(response){
+                $('#cart_counter').html(response.cart_counter)
+                $('#qty-'+product_id).html(response.qty)
+            }
+        })
+    })
+
+    // Remove from cart
+    $('.removeFromCart').on('click', function(e){
+        e.preventDefault();
+        product_id = $(this).attr('data-id');
+        url = $(this).attr('data-url');
+        $.ajax({
+            type: 'GET',
+            url: url,
             success: function(response){
                 $('#cart_counter').html(response.cart_counter)
                 $('#qty-'+product_id).html(response.qty)
