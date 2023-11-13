@@ -86,3 +86,11 @@ def removeFromCart(request, product_id):
             return JsonResponse({'status': 'Failed', 'message':'Invalid request'})
     else: 
        return JsonResponse({'status': 'notAuthenticated', 'message':'Please login to remove items from your cart'})
+    
+
+def cart(request):
+    cart_items = Cart.objects.filter(user=request.user)
+    context = {
+        'cart_items':cart_items,
+    }
+    return render(request, 'marketplace/cart.html', context)
