@@ -10,6 +10,7 @@ urlpatterns = [
     path('add_to_cart/<int:product_id>/', views.addToCart, name='addToCart'),
     #Remove from cart
     path('remove_from_cart/<int:product_id>/', views.removeFromCart, name='removeFromCart'),
-    
+    #Delete cart
+    path('delete_cart/<int:product_id>', views.deleteCart, name='deleteCart'),
 
 ]
