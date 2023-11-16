@@ -90,7 +90,7 @@ def removeFromCart(request, product_id):
     
 @login_required
 def cart(request):
-    cart_items = Cart.objects.filter(user=request.user)
+    cart_items = Cart.objects.filter(user=request.user).order_by('created_at')
     context = {
         'cart_items':cart_items,
     }
