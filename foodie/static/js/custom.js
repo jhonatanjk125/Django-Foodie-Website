@@ -77,6 +77,13 @@ $(document).ready(function(){
                 }else{
                 $('#cart_counter').html(response.cart_counter)
                 $('#qty-'+product_id).html(response.qty)
+
+                // Update subtotal, tax and total
+                applyCartTotals(
+                    response.cart_totals.sub_total,
+                    response.cart_totals.tax,
+                    response.cart_totals.grand_total,
+                )
             }}
         })
     })
@@ -101,6 +108,13 @@ $(document).ready(function(){
                 }else{
                 $('#cart_counter').html(response.cart_counter)
                 $('#qty-'+product_id).html(response.qty)
+
+                    // Update subtotal, tax and total
+                    applyCartTotals(
+                    response.cart_totals.sub_total,
+                    response.cart_totals.tax,
+                    response.cart_totals.grand_total,
+                    )
 
                     if(window.location.pathname == '/cart/'){
                     removeCartItem(response.qty, cart_id);
@@ -133,6 +147,12 @@ $(document).ready(function(){
                     }else{
                     $('#cart_counter').html(response.cart_counter)
                     Swal.fire(response.status, response.message, 'success')
+                                    // Update subtotal, tax and total
+                applyCartTotals(
+                    response.cart_totals.sub_total,
+                    response.cart_totals.tax,
+                    response.cart_totals.grand_total,
+                )
                     removeCartItem(0, cartId)
                     checkEmptyCart();
                 }}
@@ -158,5 +178,13 @@ $(document).ready(function(){
             }
         }
 
-
+        // Update cart subtotal, tax and total
+        function applyCartTotals(subtotal, tax, total){
+            if(window.location.pathname == '/cart/'){
+                $('#subtotal').html(subtotal);
+                $('#tax').html(tax);
+                $('#total').html(total);
+                console.log(subtotal, tax, total)
+        }
+    }
 })

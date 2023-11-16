@@ -1,6 +1,6 @@
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, render
-from marketplace.context_processors import get_cart_count
+from marketplace.context_processors import get_cart_count, get_cart_total
 from marketplace.models import Cart
 from menu.models import Category, Product
 from vendor.models import Vendor
@@ -50,10 +50,10 @@ def addToCart(request, product_id):
                     # Increase number of products in cart for products already in it
                     checkCart.quantity += 1
                     checkCart.save()
-                    return JsonResponse({'status':'Success', 'message':'Increased number of items in the cart','cart_counter':get_cart_count(request)['cart_count'], 'qty':checkCart.quantity})
+                    return JsonResponse({'status':'Success', 'message':'Increased number of items in the cart','cart_counter':get_cart_count(request)['cart_count'], 'qty':checkCart.quantity, 'cart_totals':get_cart_total(request)})
                 except:
                     checkCart = Cart.objects.create(user=request.user, product=product, quantity=1)
-                    return JsonResponse({'status':'Success', 'message':'The product was succesfully added', 'cart_counter':get_cart_count(request)['cart_count'],'qty':checkCart.quantity})
+                    return JsonResponse({'status':'Success', 'message':'The product was succesfully added', 'cart_counter':get_cart_count(request)['cart_count'],'qty':checkCart.quantity, 'cart_totals':get_cart_total(request)})
             except:
                 return JsonResponse({'status': 'Failed', 'message':"This product doesn't exist"})
         else:
@@ -74,11 +74,11 @@ def removeFromCart(request, product_id):
                     if checkCart.quantity > 1:
                         checkCart.quantity -= 1
                         checkCart.save()
-                        return JsonResponse({'status':'Success', 'message':'Decreased number of items in the cart','cart_counter':get_cart_count(request)['cart_count'], 'qty':checkCart.quantity})
+                        return JsonResponse({'status':'Success', 'message':'Decreased number of items in the cart','cart_counter':get_cart_count(request)['cart_count'], 'qty':checkCart.quantity, 'cart_totals':get_cart_total(request)})
                     else:
                         checkCart.delete()
                         checkCart.quantity = 0
-                        return JsonResponse({'status':'Success', 'message':'The product was succesfully removed', 'cart_counter':get_cart_count(request)['cart_count'],'qty':0})
+                        return JsonResponse({'status':'Success', 'message':'The product was succesfully removed', 'cart_counter':get_cart_count(request)['cart_count'],'qty':0, 'cart_totals':get_cart_total(request)})
                 except:
                     return JsonResponse({'status': 'Failed', 'message':"This product isn't in your cart"})
             except:
@@ -104,7 +104,7 @@ def deleteCart(request, product_id):
             try:
                 cart_item = Cart.objects.get(id=product_id)
                 cart_item.delete()
-                return JsonResponse({'status':'Success', 'message':'The product was succesfully removed', 'cart_counter':get_cart_count(request)['cart_count']})
+                return JsonResponse({'status':'Success', 'message':'The product was succesfully removed', 'cart_counter':get_cart_count(request)['cart_count'], 'cart_totals':get_cart_total(request)})
             except:
                 return JsonResponse({'status': 'Failed', 'message':"This product isn't in your cart"})
         else:
