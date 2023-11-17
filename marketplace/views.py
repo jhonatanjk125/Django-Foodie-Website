@@ -111,3 +111,7 @@ def deleteCart(request, product_id):
             return JsonResponse({'status': 'Failed', 'message':'Invalid request'})
     else: 
        return JsonResponse({'status': 'notAuthenticated', 'message':'Please login to remove items from your cart'})
+
+
+def search(request):
+    return HttpResponse('Search Page')
