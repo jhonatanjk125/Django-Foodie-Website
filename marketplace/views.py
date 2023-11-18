@@ -4,8 +4,9 @@ from marketplace.context_processors import get_cart_count, get_cart_total
 from marketplace.models import Cart
 from menu.models import Category, Product
 from vendor.models import Vendor
-from django.db.models import Prefetch
+from django.db.models import Prefetch, Q
 from django.contrib.auth.decorators import login_required
+
 
 # Create your views here.
 def marketplace(request):
@@ -119,8 +120,9 @@ def search(request):
     longuitude = request.GET.get('longuitude')
     radius = request.GET.get('radius')
     keyword = request.GET.get('keyword')
-
-    vendors = Vendor.objects.filter(is_approved=True, user__is_active=True, vendor_name__icontains=keyword)
+    # Filter by product search
+    fetched_products = Product.objects.filter(product_title__icontains=keyword, is_available=True).values_list('vendor', flat=True)
+    vendors = Vendor.objects.filter(Q(id__in=fetched_products) | Q(vendor_name__icontains=keyword, is_approved=True, user__is_active=True)) 
     vendor_count = vendors.count()
     context = {
         'vendors':vendors,
