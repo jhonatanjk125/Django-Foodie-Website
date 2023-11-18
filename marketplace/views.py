@@ -114,4 +114,16 @@ def deleteCart(request, product_id):
 
 
 def search(request):
-    return HttpResponse('Search Page')
+    address = request.GET.get('address')
+    latitude = request.GET.get('latitude')
+    longuitude = request.GET.get('longuitude')
+    radius = request.GET.get('radius')
+    keyword = request.GET.get('keyword')
+
+    vendors = Vendor.objects.filter(is_approved=True, user__is_active=True, vendor_name__icontains=keyword)
+    vendor_count = vendors.count()
+    context = {
+        'vendors':vendors,
+        'vendor_count':vendor_count,
+    }
+    return render(request, 'marketplace/vendors.html', context)

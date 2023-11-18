@@ -24,6 +24,7 @@
                   <br>
                                     <h6>Category <span class="text-uppercase text-success">{{ category.category_name }}</span></h6>
                                     {% if products %}
+                                    <a href="{% url 'addProduct' %}" class="btn btn-success float-right"><i class="fa-solid fa-plus"></i>Add product</a>
                                     <table class="table table-hover table-borderless">
                                         <tbody>
                                             {% for product in products %}
