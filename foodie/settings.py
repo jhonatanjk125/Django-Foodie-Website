@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.gis',
     'accounts',
     'vendor',
     'menu',
@@ -172,5 +173,5 @@ EMAIL_USE_TLS = True
 GOOGLE_API_KEY = env('GOOGLE_API_KEY')
 
 os.environ['PATH'] = os.path.join(BASE_DIR, 'venv\Lib\site-packages\osgeo') + ';' + os.environ['PATH']
-os.environ['PROJ_LIB'] = os.path.join(BASE_DIR, 'venv\Libsite-packages\osgeo\data\proj') + ';' + os.environ['PATH']
-GDAL_LIBRARY_PATH = os.path.join(BASE_DIR, 'venv\Libsite-packages\osgeo\gdal304.dll')
+os.environ['PROJ_LIB'] = os.path.join(BASE_DIR, 'venv\Libs\ite-packages\osgeo\data\proj') + ';' + os.environ['PATH']
+GDAL_LIBRARY_PATH = os.path.join(BASE_DIR, 'venv\Lib\site-packages\osgeo\gdal304.dll')
