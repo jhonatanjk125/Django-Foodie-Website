@@ -1,5 +1,5 @@
 from django.http import HttpResponse, JsonResponse
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404, redirect, render
 from marketplace.context_processors import get_cart_count, get_cart_total
 from marketplace.models import Cart
 from menu.models import Category, Product
@@ -8,6 +8,7 @@ from django.db.models import Prefetch, Q
 from django.contrib.auth.decorators import login_required
 from django.contrib.gis.geos import GEOSGeometry
 from django.contrib.gis.measure import D
+from django.contrib.gis.db.models.functions import Distance
 
 # Create your views here.
 def marketplace(request):
@@ -116,24 +117,30 @@ def deleteCart(request, product_id):
 
 
 def search(request):
-    address = request.GET.get('address')
-    latitude = request.GET.get('lat')
-    longuitude = request.GET.get('lng')
-    radius = request.GET.get('radius')
-    keyword = request.GET.get('keyword')
-    # Filter by product search
-    fetched_products = Product.objects.filter(product_title__icontains=keyword, is_available=True).values_list('vendor', flat=True)
-    print(latitude)
-    print(longuitude)
-    vendors = Vendor.objects.filter(Q(id__in=fetched_products) | Q(vendor_name__icontains=keyword, is_approved=True, user__is_active=True)) 
-    if latitude and longuitude and radius:
-        pnt = GEOSGeometry('POINT(%s %s)' %(longuitude, latitude))
-        vendors = Vendor.objects.filter(Q(id__in=fetched_products) | Q(vendor_name__icontains=keyword, is_approved=True, user__is_active=True), 
-                                        user_profile__location__distance_lte=(pnt, D(km=radius)))
-        
-    vendor_count = vendors.count()
-    context = {
-        'vendors':vendors,
-        'vendor_count':vendor_count,
-    }
-    return render(request, 'marketplace/vendors.html', context)
+    if 'address' not in request.GET:
+        return redirect('marketplace')
+    else:
+        address = request.GET.get('address')
+        latitude = request.GET.get('lat')
+        longuitude = request.GET.get('lng')
+        radius = request.GET.get('radius')
+        keyword = request.GET.get('keyword')
+        # Filter by product search
+        fetched_products = Product.objects.filter(product_title__icontains=keyword, is_available=True).values_list('vendor', flat=True)
+        vendors = Vendor.objects.filter(Q(id__in=fetched_products) | Q(vendor_name__icontains=keyword, is_approved=True, user__is_active=True)) 
+        if latitude and longuitude and radius:
+            pnt = GEOSGeometry('POINT(%s %s)' %(longuitude, latitude))
+            vendors = Vendor.objects.filter(Q(id__in=fetched_products) | Q(vendor_name__icontains=keyword, is_approved=True, user__is_active=True), 
+                                            user_profile__location__distance_lte=(pnt, D(km=radius))
+                                            ).annotate(distance=Distance('user_profile__location', pnt)).order_by('distance')
+            
+            for v in vendors:
+                v.kms = round(v.distance.km, 1)
+            
+        vendor_count = vendors.count()
+        context = {
+            'vendors':vendors,
+            'vendor_count':vendor_count,
+            'source_location':address,
+        }
+        return render(request, 'marketplace/vendors.html', context)
