@@ -6,7 +6,8 @@ from menu.models import Category, Product
 from vendor.models import Vendor
 from django.db.models import Prefetch, Q
 from django.contrib.auth.decorators import login_required
-
+from django.contrib.gis.geos import GEOSGeometry
+from django.contrib.gis.measure import D
 
 # Create your views here.
 def marketplace(request):
@@ -116,13 +117,20 @@ def deleteCart(request, product_id):
 
 def search(request):
     address = request.GET.get('address')
-    latitude = request.GET.get('latitude')
-    longuitude = request.GET.get('longuitude')
+    latitude = request.GET.get('lat')
+    longuitude = request.GET.get('lng')
     radius = request.GET.get('radius')
     keyword = request.GET.get('keyword')
     # Filter by product search
     fetched_products = Product.objects.filter(product_title__icontains=keyword, is_available=True).values_list('vendor', flat=True)
+    print(latitude)
+    print(longuitude)
     vendors = Vendor.objects.filter(Q(id__in=fetched_products) | Q(vendor_name__icontains=keyword, is_approved=True, user__is_active=True)) 
+    if latitude and longuitude and radius:
+        pnt = GEOSGeometry('POINT(%s %s)' %(longuitude, latitude))
+        vendors = Vendor.objects.filter(Q(id__in=fetched_products) | Q(vendor_name__icontains=keyword, is_approved=True, user__is_active=True), 
+                                        user_profile__location__distance_lte=(pnt, D(km=radius)))
+        
     vendor_count = vendors.count()
     context = {
         'vendors':vendors,
