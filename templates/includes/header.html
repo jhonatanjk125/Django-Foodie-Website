@@ -67,6 +67,17 @@
 			function showPosition(position) {
 				const lat = position.coords.latitude;
 				const lng = position.coords.longitude;
-				x.value = lat + ', ' + lng
+				
+				// Send AJAX request to googlemaps API endpoint and get the location data using latitude and longitude.
+				const GOOGLE_API_KEY = '{{ GOOGLE_API_KEY }}'
+				const url = 'https://maps.googleapis.com/maps/api/geocode/json?latlng='+lat+','+lng+'+&key='+GOOGLE_API_KEY
+				$.ajax({
+					url: url,
+					type: 'GET',
+					success: function(response){
+						var current_location = response.results[0].formatted_address
+						x.value = current_location
+					}
+				})
 			}
 			</script>
