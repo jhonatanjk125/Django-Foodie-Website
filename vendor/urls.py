@@ -18,5 +18,8 @@ urlpatterns = [
     path('menuBuilder/product/add/', views.addProduct, name='addProduct'),
     path('menuBuilder/product/edit/<int:pk>/', views.editProduct, name='editProduct'),
     path('menuBuilder/product/delete/<int:pk>/', views.deleteProduct, name='deleteProduct'),
+
+    #CRUD for opening hours
+    path('openingHours/', views.openingHours, name='openingHours')
     
 ]
