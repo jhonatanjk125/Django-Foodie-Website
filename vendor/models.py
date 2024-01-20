@@ -61,3 +61,5 @@ class OpeningHours(models.Model):
         unique_together = ('day', 'from_hour', 'to_hour')
 
 
+    def __str__(self):
+        return self.get_day_display()

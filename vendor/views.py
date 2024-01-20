@@ -1,10 +1,10 @@
 from django.shortcuts import get_object_or_404, redirect, render
 from accounts.views import check_vendor_role
 from menu.forms import CategoryForm, ProductForm
-from .forms import VendorForm
+from .forms import VendorForm, OpeningHoursForm
 from accounts.forms import UserProfileForm
 from accounts.models import UserProfile
-from .models import Vendor
+from .models import Vendor, OpeningHours
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
 from menu.models import Category, Product
@@ -181,4 +181,10 @@ def deleteProduct(request, pk=None):
 
 
 def openingHours(request):
-    return render(request, 'vendor/openingHours.html')
+    opening_hours = OpeningHours.objects.filter(vendor=get_vendor(request))
+    form = OpeningHoursForm()
+    context = {
+        'form':form,
+        'opening_hours': opening_hours,
+    }
+    return render(request, 'vendor/openingHours.html', context)
