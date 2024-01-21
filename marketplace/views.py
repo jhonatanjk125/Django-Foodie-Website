@@ -10,6 +10,7 @@ from django.contrib.gis.geos import GEOSGeometry
 from django.contrib.gis.measure import D
 from django.contrib.gis.db.models.functions import Distance
 
+
 # Create your views here.
 def marketplace(request):
     vendors = Vendor.objects.filter(is_approved=True, user__is_active=True)

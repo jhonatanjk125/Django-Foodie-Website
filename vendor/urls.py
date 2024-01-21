@@ -20,6 +20,7 @@ urlpatterns = [
     path('menuBuilder/product/delete/<int:pk>/', views.deleteProduct, name='deleteProduct'),
 
     #CRUD for opening hours
-    path('openingHours/', views.openingHours, name='openingHours')
+    path('openingHours/', views.openingHours, name='openingHours'),
+    path('openingHours/add/', views.addOpeningHours, name='addOpeningHours'),
     
 ]

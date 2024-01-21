@@ -10,6 +10,7 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from menu.models import Category, Product
 from .utils import get_vendor
 from django.template.defaultfilters import slugify
+from django.http import HttpResponse
 
 
 # Create your views here.
@@ -188,3 +189,7 @@ def openingHours(request):
         'opening_hours': opening_hours,
     }
     return render(request, 'vendor/openingHours.html', context)
+
+
+def addOpeningHours(request):
+    return HttpResponse('Add opening hour')
