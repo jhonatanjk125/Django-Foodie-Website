@@ -10,7 +10,8 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from menu.models import Category, Product
 from .utils import get_vendor
 from django.template.defaultfilters import slugify
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
+from django.db import IntegrityError
 
 
 # Create your views here.
@@ -192,4 +193,37 @@ def openingHours(request):
 
 
 def addOpeningHours(request):
-    return HttpResponse('Add opening hour')
+    #Handles the opening hours data and saves it to the database
+    if request.user.is_authenticated:
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest' and request.method == 'POST':
+            day = request.POST.get('day')
+            from_hour = request.POST.get('from_hour')
+            to_hour = request.POST.get('to_hour')
+            is_closed = request.POST.get('is_closed')
+            try:
+                new_opening_time = OpeningHours.objects.create(vendor=get_vendor(request), day=day, from_hour=from_hour, to_hour=to_hour, is_closed=is_closed)
+                if new_opening_time:
+                    day = OpeningHours.objects.get(id=new_opening_time.id)
+                    if day.is_closed:
+                        response = {
+                            'status':'success',
+                            'id':new_opening_time.id,
+                            'day':day.get_day_display(),
+                            'is_closed':'Closed'
+                        }
+                    else:
+                        response = {
+                            'status':'success',
+                            'id':new_opening_time.id,
+                            'day':day.get_day_display(),
+                            'from_hour':new_opening_time.from_hour,
+                            'to_hour':new_opening_time.to_hour,
+                        }
+                return JsonResponse(response)
+            except IntegrityError as e:
+                response={
+                    'status':'failed'
+                }
+                return JsonResponse(response)
+        else:
+            HttpResponse('Invalid request')
