@@ -187,7 +187,8 @@ $(document).ready(function(){
                 console.log(subtotal, tax, total)
         }
     }
-    // 
+
+    // Add opening hours
 
     $('.add_hour').on('click',function(e){
         e.preventDefault();
@@ -218,9 +219,9 @@ $(document).ready(function(){
                 success: function(response){
                     if(response.status == 'success'){
                         if(response.is_closed=='Closed'){
-                            html= '<tr><td><b>'+response.day+'</b></td><td>Closed</td><td><a href="#">Remove</a></td></tr>'
+                            html= '<tr id="day-'+response.id+'"><td><b>'+response.day+'</b></td><td>Closed</td><td><a href="#" class="remove_hour" data-url="/vendor/openingHours/remove/'+response.id+'">Remove</a></td></tr>'
                         }else{
-                            html = '<tr><td><b>'+response.day+'</b></td><td>'+response.from_hour+' - '+response.to_hour+'</td><td><a href="#">Remove</a></td></tr>'
+                            html = '<tr id="day-'+response.id+'"><td><b>'+response.day+'</b></td><td>'+response.from_hour+' - '+response.to_hour+'</td><td><a href="#" class="remove_hour" data-url="/vendor/openingHours/remove/'+response.id+'">Remove</a></td></tr>'
                         }
                         
                         $('.opening_hours').append(html)
@@ -235,4 +236,19 @@ $(document).ready(function(){
         }
     })
 
+    // Remove opening hours
+    $(document).on('click', '.remove_hour', function(e){
+        e.preventDefault();
+        url = $(this).attr('data-url')
+
+        $.ajax({
+            type: 'GET',
+            url: url,
+            success: function(response){
+                if(response.status == 'success'){
+                    document.getElementById('day-'+response.id).remove()
+                }
+            },
+        }) 
+    })
 });
