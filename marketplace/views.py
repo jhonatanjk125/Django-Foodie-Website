@@ -3,13 +3,13 @@ from django.shortcuts import get_object_or_404, redirect, render
 from marketplace.context_processors import get_cart_count, get_cart_total
 from marketplace.models import Cart
 from menu.models import Category, Product
-from vendor.models import Vendor
+from vendor.models import Vendor,OpeningHours
 from django.db.models import Prefetch, Q
 from django.contrib.auth.decorators import login_required
 from django.contrib.gis.geos import GEOSGeometry
 from django.contrib.gis.measure import D
 from django.contrib.gis.db.models.functions import Distance
-
+from datetime import date
 
 # Create your views here.
 def marketplace(request):
@@ -30,6 +30,11 @@ def vendorPage(request, vendor_slug):
             queryset = Product.objects.filter(is_available=True)
         )
     )
+
+    opening_hours = OpeningHours.objects.filter(vendor=vendor).order_by('day','-from_hour')
+    # Check current day
+    today = date.today().isoweekday()
+    current_opening_hours = OpeningHours.objects.filter(vendor=vendor,day=today)
     if request.user.is_authenticated:
         cart_items = Cart.objects.filter(user=request.user)
     else:
@@ -38,6 +43,8 @@ def vendorPage(request, vendor_slug):
         'vendor':vendor,
         'categories':categories,
         'cart_items':cart_items,
+        'opening_hours': opening_hours,
+        'current_opening_hours': current_opening_hours,
     }
     return render(request, 'marketplace/vendorPage.html', context)
 
