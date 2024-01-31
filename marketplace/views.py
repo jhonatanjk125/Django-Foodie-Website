@@ -32,20 +32,10 @@ def vendorPage(request, vendor_slug):
     )
 
     opening_hours = OpeningHours.objects.filter(vendor=vendor).order_by('day','-from_hour')
-    # Check current day
+    # Check current day's opening hours
     today = date.today().isoweekday()
     current_opening_hours = OpeningHours.objects.filter(vendor=vendor,day=today)
-    time_now = datetime.now()
-    current_time = time_now.strftime('%H:%M:%S')
-    is_open_now = None
-    for hour in current_opening_hours:
-        start_time = str(datetime.strptime(hour.from_hour, '%I:%M %p').time())
-        end_time = str(datetime.strptime(hour.to_hour, '%I:%M %p').time())
-        if start_time<current_time<end_time:
-            is_open_now = True
-            break
-        else:
-            is_open_now = False
+    
     if request.user.is_authenticated:
         cart_items = Cart.objects.filter(user=request.user)
     else:
@@ -56,7 +46,6 @@ def vendorPage(request, vendor_slug):
         'cart_items':cart_items,
         'opening_hours': opening_hours,
         'current_opening_hours': current_opening_hours,
-        'is_open_now':is_open_now
     }
     return render(request, 'marketplace/vendorPage.html', context)
 
